@@ -1,0 +1,39 @@
+# Read the data from the URL
+data <- read.csv("https://raw.githubusercontent.com/mcavs/data/main/results.csv")
+
+# verileri ortalamalara göre gruplandırma yapılacak
+
+# Calculate the means by grouping CE_Method, Used_Model, and Quality_Metric
+mean_values <- aggregate(Values ~ CE_Method + Used_Model + Quality_Metric, data = data, mean)
+
+# Print the resulting mean values
+print(mean_values)
+
+# Save the resulting mean values as a CSV file
+write.csv(mean_values, file = "mean_values.csv", row.names = FALSE)
+
+unique(mean_data$Quality_Metric) 
+
+# görselleştirme için bar plot kullanımına karar verdim, deneysel oarak mosaic plot düşündüm ancak verileri istediğim gibi düzenleyemedim 
+bu nedenle anlaşılabilir olması için Quality Metricslere göre her Method ve Modelinin degerlerini görselleştirme kararı aldım 
+
+
+# Load necessary library
+library(ggplot2)
+
+# Read the mean_values.csv file
+mean_data <- read.csv("mean_values.csv")
+
+# Create the plot
+ggplot(mean_data, aes(x = CE_Method, y = Values, fill = Used_Model)) +
+  geom_bar(stat = "identity", position = "stack") +
+  facet_wrap(~Quality_Metric, scales = "free_y") +
+  labs(title = "CE Yöntemine, Kullanılan Modele ve Kalite Metriğine Göre Ortalama Değerler",
+       x = "CE Method",
+       y = "Mean Values",
+       fill = "Used Model") +
+  scale_fill_brewer(palette = "Set2") +  # Set the color palette to Set2
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#burada ki stackları artan olarak düzenleme yapmak istedim ancak bu zaman R`da veriler kayboluyor bu nedenle artan hizada görselleştirme yapılamadı
