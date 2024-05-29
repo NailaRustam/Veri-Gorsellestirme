@@ -1,0 +1,302 @@
+# Install the readxl package (if not already installed)
+install.packages("readxl")
+
+# Load the readxl package
+library(readxl)
+
+# Read the Excel file using forward slashes
+data <- read_excel("C:/Users/Naile Ismayilzade/Downloads/DataStress.xlsx")
+
+# View the first few rows of the data to ensure it has been read correctly
+head(data)
+
+# Check the column names in your dataset
+colnames(data)
+
+library(readxl)
+library(dplyr)
+
+# Read the Excel file
+data <- read_excel("C:/Users/Naile Ismayilzade/Downloads/DataStress.xlsx")
+
+# Rename the column to use ASCII characters
+names(data)[which(names(data) == "yaş grupları")] <- "Yas"
+
+# Now proceed with the rest of the script to create the labeled column
+data <- data %>%
+  mutate(Yas_Label = case_when(
+    Yas == 1 ~ "18-19",
+    Yas == 2 ~ "20-24",
+    Yas == 3 ~ "25-29",
+    TRUE ~ as.character(Yas) # keep original value if it doesn't match any case
+  ))
+
+##yas oranlar
+
+
+# Calculate the counts of each age range
+age_counts <- table(data$Yas)
+
+# Calculate the total number of observations
+total <- length(data$Yas)
+
+# Calculate the percentage of each age range
+age_percentages <- prop.table(age_counts) * 100
+
+# Assign labels to age ranges
+age_labels <- c("18-19", "20-24", "25-29")
+
+# Rename the index of age_percentages with labels
+names(age_percentages) <- age_labels
+
+# Print the percentages
+print(age_percentages)
+
+# Create a pie chart with transparent background
+pie(age_percentages, 
+    labels = paste(age_labels, "(", round(age_percentages, 1), "%)", sep = ""), # Add labels with percentages
+    main = "Yaş dağılımı", 
+    col = blue_colors,  # Use shades of blue for each age group
+    bg = "transparent")  # Set the background color to transparent
+
+# Add a legend
+legend("topright", age_labels, fill = blue_colors, title = "Yaş grupları", cex = 0.8)
+
+# Add a title
+title("Yaş dağılımı")
+
+##cinsiyet oranlar
+
+# Create frequency table for the "Cinsiyet" variable
+gender_counts <- table(data$cinsiyet)
+
+# Print the frequency table
+print(gender_counts)
+
+# View the first few rows to check the results
+head(data)
+
+# Calculate the counts of each gender
+gender_counts <- table(data$cinsiyet)
+
+# Calculate the total number of observations
+total <- length(data$cinsiyet)
+
+# Calculate the percentage of each gender
+gender_percentages <- prop.table(gender_counts) * 100
+
+# Assign labels to age ranges
+gender_labels <- c("Erkek", "Kadın")
+
+# Rename the index of age_percentages with labels
+names(gender_percentages) <- gender_labels
+
+# Print the percentages
+print(gender_percentages)
+
+colnames(data)
+
+
+# Calculate the average of values in specified columns
+data$OEHOsum <- rowMeans(data[c("Ekonomik Güvence ;", "Yetkinlik/Katılım ;", 
+                                "Sosyal Bağlantılar;", "Yakın İlişkiler ;", 
+                                "Fiziksel/Ruhsal Sağlık ;", "Kişisel Yeterlilik/Öz-Değer ;", 
+                                "Değerler/Anlam")], na.rm = TRUE)
+
+# View the first few rows to check the results
+head(data)
+
+# Specify the variables of interest
+variables_of_interest <- c("OEHOsum", "Yasal duzenlemeler", "Aile ve toplum baskısı", 
+                           "Sosyal destek", "Gelecek kaygısı", "Ekonomik zorluk", 
+                           "Akademik ve çalışma hayatı", "Romantik İlişkiler")
+
+# Calculate the Pearson correlation
+correlation_matrix <- cor(data[variables_of_interest], use = "pairwise.complete.obs")
+
+# View the correlation matrix
+print(correlation_matrix)
+
+# Install and load the necessary package (if not already installed)
+install.packages("gplots")
+library(gplots)
+
+
+library(ggplot2)
+
+# Create a data frame with the gender percentages
+gender_data <- data.frame(
+  Gender = c("Women", "Men"),
+  Percentage = c(68, 32)
+)
+
+# Create the pictogram
+pictogram <- ggplot(gender_data, aes(x = "", y = Percentage, fill = Gender)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  theme_void() +
+  theme(legend.position = "none") +
+  labs(title = "Gender Distribution")
+
+# Print the pictogram
+print(pictogram)
+
+
+##tryng to visualize the correlation
+# Install and load the necessary package (if not already installed)
+install.packages("GGally")
+library(GGally)
+
+# Specify the variables of interest
+variables_of_interest <- c("OEHOsum", "Yasal duzenlemeler", "Aile ve toplum baskısı", 
+                           "Sosyal destek", "Gelecek kaygısı", "Ekonomik zorluk", 
+                           "Akademik ve çalışma hayatı")
+
+# Create a subset of the data with the variables of interest
+data_subset <- data[variables_of_interest]
+
+# Create the scatterplot matrix
+scatterplot_matrix <- ggpairs(data_subset, 
+                              title = "Scatterplot Matrix with Correlation Coefficients",
+                              upper = list(continuous = wrap("cor", size = 5, digits = 2)))  # Display correlation coefficients on upper diagonal
+
+# Print the scatterplot matrix
+print(scatterplot_matrix)
+
+
+colnames(data)
+
+##rename the variable names for being better to see
+
+# Load necessary libraries
+library(dplyr)
+library(GGally)
+
+# Rename variables
+data_renamed <- data %>%
+  rename(OEHO1 = OEHOsum,
+         YD = `Yasal duzenlemeler`,
+         ATB = `Aile ve toplum baskısı`,
+         SD = `Sosyal destek`,
+         GK = `Gelecek kaygısı`,
+         EZ = `Ekonomik zorluk`,
+         ACH = `Akademik ve çalışma hayatı`)
+
+# Specify the renamed variables of interest
+variables_of_interest <- c("OEHO1", "YD", "ATB", "SD", "GK", "EZ", "ACH")
+
+# Create a subset of the data with the renamed variables of interest
+data_subset <- data_renamed[variables_of_interest]
+
+# Create the scatterplot matrix
+scatterplot_matrix <- ggpairs(data_subset, 
+                              title = "Scatterplot Matrix with Correlation Coefficients",
+                              upper = list(continuous = wrap("cor", size = 5, digits = 2)))  # Display correlation coefficients on upper diagonal
+
+# Print the scatterplot matrix
+print(scatterplot_matrix)
+
+# Install the readxl package if not already installed
+install.packages("readxl")
+
+library(readxl)
+library(tidyr)
+library(ggplot2)
+
+# Read the data
+data <- read_excel("C:/Users/Naile Ismayilzade/Downloads/DataStress.xlsx")
+
+# Specify the variables of interest
+variables_of_interest <- c("Yasal duzenlemeler", "Aile ve toplum baskısı", 
+                           "Sosyal destek", "Gelecek kaygısı", 
+                           "Ekonomik zorluk", "Akademik ve çalışma hayatı", 
+                           "Romantik İlişkiler", "ekonomik durum")
+
+# Create a subset of the data with the variables of interest
+data_subset <- data[variables_of_interest]
+
+# Reshape the data to long format
+data_long <- pivot_longer(data_subset, 
+                          cols = -`ekonomik durum`,  # Enclose column name with spaces in backticks
+                          names_to = "Variable", 
+                          values_to = "Value")
+
+# Plot using ggplot2
+ggplot(data_long, aes(x = `ekonomik durum`, y = Value, fill = `ekonomik durum`)) +
+  geom_boxplot() +
+  facet_wrap(~ Variable, scales = "free_y", ncol = 2) +
+  labs(title = "Distribution of Variables by Economic Status", 
+       x = "Economic Status", 
+       y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
+
+## yaslara gore dagilim
+
+# Read the data
+data <- read_excel("C:/Users/Naile Ismayilzade/Downloads/DataStress.xlsx")
+
+# Specify the variables of interest
+variables_of_interest <- c("Yasal duzenlemeler", "Aile ve toplum baskısı", 
+                           "Sosyal destek", "Gelecek kaygısı", 
+                           "Ekonomik zorluk", "Akademik ve çalışma hayatı", 
+                           "Romantik İlişkiler", "yaş grupları")
+
+# Create a subset of the data with the variables of interest
+data_subset <- data[variables_of_interest]
+
+# Add labels to the "yaş grupları" variable
+age_labels <- c("18-19", "20-24", "25-29")
+data_subset$`yaş grupları` <- factor(data_subset$`yaş grupları`, levels = c("1", "2", "3"), labels = age_labels)
+
+# Reshape the data to long format
+data_long <- tidyr::pivot_longer(data_subset, 
+                                 cols = -`yaş grupları`, 
+                                 names_to = "Variable", 
+                                 values_to = "Value")
+
+# Plot using ggplot2
+ggplot(data_long, aes(x = factor(`yaş grupları`), y = Value, fill = factor(`yaş grupları`))) +
+  geom_boxplot() +
+  facet_wrap(~ Variable, scales = "free_y", ncol = 2) +
+  labs(title = "Stres kaynaklarının yaşlara göre dağılımı", 
+       x = "Yaş grubu", 
+       y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
+
+
+proba 6 
+
+# Read the data
+data <- read_excel("C:/Users/Naile Ismayilzade/Downloads/DataStress.xlsx")
+
+# Specify the variables of interest
+variables_of_interest <- c("Yasal duzenlemeler", "Aile ve toplum baskısı", 
+                           "Sosyal destek", "Gelecek kaygısı", 
+                           "Ekonomik zorluk", "Akademik ve çalışma hayatı", 
+                           "Romantik İlişkiler", "cinsiyet")
+
+# Create a subset of the data with the variables of interest
+data_subset <- data[variables_of_interest]
+
+# Add labels to the "cinsiyet" variable
+gender_labels <- c("Erkek", "Kadın")
+data_subset$cinsiyet <- factor(data_subset$cinsiyet, levels = c("1", "2"), labels = gender_labels)
+
+# Reshape the data to long format
+data_long <- tidyr::pivot_longer(data_subset, 
+                                 cols = -cinsiyet, 
+                                 names_to = "Variable", 
+                                 values_to = "Value")
+
+# Plot using ggplot2
+ggplot(data_long, aes(x = factor(cinsiyet), y = Value, fill = factor(cinsiyet))) +
+  geom_boxplot() +
+  facet_wrap(~ Variable, scales = "free_y", ncol = 2) +
+  labs(title = "Stres kaynaklarının cinsiyete göre dağılımı", 
+       x = "Cinsiyet", 
+       y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels if needed
+
